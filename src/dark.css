@@ -1,0 +1,96 @@
+/*
+ * Everything here is gated on html[data-gdm-dark], set by page-hook.js / bridge.js.
+ *
+ * "editor" = a document page. The document body is a canvas whose colors are
+ *            remapped by page-hook.js; this sheet only darkens the UI around it.
+ * "list"   = the Docs home page / file list. Plain DOM, so a page-wide filter
+ *            with images flipped back is enough.
+ */
+
+html[data-gdm-dark] {
+  --gdm-surround: #161616;
+  --gdm-page: #202124;
+  --gdm-ui-filter: invert(0.93) hue-rotate(180deg);
+  --gdm-undo-filter: invert(1) hue-rotate(180deg);
+}
+
+/* ---------- Editor: area around the pages ---------- */
+
+html[data-gdm-dark="editor"],
+html[data-gdm-dark="editor"] body,
+html[data-gdm-dark="editor"] :is(#docs-editor-container, #docs-editor, .kix-appview-editor-container, .kix-appview-editor) {
+  background-color: var(--gdm-surround) !important;
+}
+
+html[data-gdm-dark="editor"] .kix-appview-editor {
+  color-scheme: dark; /* dark scrollbar */
+}
+
+/* Page sheets sit under the canvas tiles; match the remapped page color. */
+html[data-gdm-dark="editor"] :is(.kix-page-paginated, .kix-page) {
+  background-color: var(--gdm-page) !important;
+}
+
+/* ---------- Editor: UI chrome ----------
+ * Toolbars, menus, dialogs, comments... are inverted as blocks. Only the
+ * outermost matching container gets the filter (nested matches would cancel
+ * out), and never anything that contains the document canvas.
+ */
+
+html[data-gdm-dark="editor"] :is(
+  #docs-chrome, #docs-header, #docs-toolbar-wrapper,
+  .kix-ruler, #kix-horizontal-ruler, #kix-vertical-ruler, .docs-ruler,
+  .left-sidebar-container, .navigation-widget,
+  .docs-companion-app-switcher-container, .docs-explore-sidebar,
+  .docos-anchoreddocoview, .docos-streampane,
+  .kix-cursor,
+  .goog-menu, .ac-renderer,
+  .goog-tooltip, .jfk-tooltip,
+  .jfk-bubble, .docs-bubble, .docs-linkbubble-bubble, .kix-spell-bubble, .docs-calloutbubble-bubble,
+  .modal-dialog, .docs-butterbar-container
+):not(:is(
+  #docs-chrome, #docs-header, #docs-toolbar-wrapper,
+  .kix-ruler, #kix-horizontal-ruler, #kix-vertical-ruler, .docs-ruler,
+  .left-sidebar-container, .navigation-widget,
+  .docs-companion-app-switcher-container, .docs-explore-sidebar,
+  .docos-anchoreddocoview, .docos-streampane,
+  .kix-cursor,
+  .goog-menu, .ac-renderer,
+  .goog-tooltip, .jfk-tooltip,
+  .jfk-bubble, .docs-bubble, .docs-linkbubble-bubble, .kix-spell-bubble, .docs-calloutbubble-bubble,
+  .modal-dialog, .docs-butterbar-container
+) *):not(:has(.kix-appview-editor, .kix-canvas-tile-content)) {
+  filter: var(--gdm-ui-filter) !important;
+}
+
+/* Flip pictures inside inverted UI back: avatars, logos, thumbnails, and the
+ * color palette swatches so picked colors look like what they are. */
+html[data-gdm-dark="editor"] :is(
+  #docs-chrome, #docs-header, #docs-toolbar-wrapper,
+  .kix-ruler, #kix-horizontal-ruler, #kix-vertical-ruler, .docs-ruler,
+  .left-sidebar-container, .navigation-widget,
+  .docs-companion-app-switcher-container, .docs-explore-sidebar,
+  .docos-anchoreddocoview, .docos-streampane,
+  .kix-cursor,
+  .goog-menu, .ac-renderer,
+  .goog-tooltip, .jfk-tooltip,
+  .jfk-bubble, .docs-bubble, .docs-linkbubble-bubble, .kix-spell-bubble, .docs-calloutbubble-bubble,
+  .modal-dialog, .docs-butterbar-container
+) :is(
+  img, video, picture, canvas:not(.kix-canvas-tile-content),
+  [style*="background-image"],
+  .docs-material-colorpalette-colorswatch-color
+) {
+  filter: var(--gdm-undo-filter) !important;
+}
+
+/* ---------- Home page / file list ---------- */
+
+html[data-gdm-dark="list"] {
+  filter: var(--gdm-ui-filter) !important;
+  background-color: var(--gdm-surround) !important;
+}
+
+html[data-gdm-dark="list"] :is(img, video, picture, canvas, [style*="background-image"]) {
+  filter: var(--gdm-undo-filter) !important;
+}
